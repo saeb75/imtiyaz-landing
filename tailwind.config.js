@@ -13,9 +13,6 @@ module.exports = {
       screens: {
         xs: "360px",
       },
-      backgroundImage: {
-        my_bg_image: "url('../public/bg.jpg')",
-      },
     },
   },
   plugins: [],
