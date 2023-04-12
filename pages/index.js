@@ -1,50 +1,78 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
-import * as animationData from "../public/pTxgjvDj6h.json";
-import Lottie from "react-lottie";
-import { TypeAnimation } from "react-type-animation";
-const inter = Inter({ subsets: ["latin"] });
+import axios from "axios";
+import React, { useEffect } from "react";
+import ReactFlow from "reactflow";
+
+import "reactflow/dist/style.css";
+
+const initialNodes = [
+  { id: "1", position: { x: 0, y: 0 }, data: { label: "asdsdddwwd" } },
+  { id: "2", position: { x: 0, y: 100 }, data: { label: "asdasdasd" } },
+];
+const initialEdges = [];
 
 export default function Home() {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+  const [nodes, setNodes] = React.useState([]);
+  const [edges, setEdges] = React.useState([]);
+  const [Bot, setBot] = React.useState({});
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:6060/api/bot/get/641e1ae0e77005996e885164")
+      .then((res) => {
+        setBot(res.data.data);
+        // { id: "1", position: { x: 0, y: 0 }, data: { label: "asdsdddwwd" } },
+        setNodes(
+          res.data.data.nodes.map((node) => {
+            return {
+              id: node.step.toString(),
+              _id: node._id,
+              position: { x: node.position.x, y: node.position.y },
+              data: { label: node.content },
+            };
+          })
+        );
+        let myEdges = [];
+        res.data.data.nodes?.map((node) => {
+          node.options?.map((option) => {
+            console.log(option);
+            myEdges.push({
+              id: `e${option.sourse}-${option.target}`,
+              source: option.sourse,
+              target: option.target,
+            });
+          });
+        });
+
+        setEdges(myEdges);
+        // console.log(res.data);
+        // setNodes(res.data.nodes);
+        // setEdges(res.data.edges);
+      });
+  }, []);
+
+  const addNode = () => {
+    const newNode = {
+      id: `3`,
+      position: { x: 300, y: 100 },
+      data: { label: `asdasdasdsa` },
+    };
+    setNodes([...nodes, newNode]);
+
+    setEdges([
+      ...edges,
+      {
+        id: `e1-3`,
+        source: "1",
+        target: "3",
+      },
+    ]);
+  };
+  console.log(edges);
   return (
-    <>
-      <main className={"bg-[#06044B] h-screen w-screen overflow-x-hidden"}>
-        <Lottie options={defaultOptions} height={400} width={400} />
-        <div className="w-[320px] xs:w-[350px] sm:w-[600px] md:w-[700px] flex justify-center items-center mx-auto">
-          <div className="w-full">
-            <h1 className="text-center md:text-4xl text-2xl">
-              Imtiyaz, tech with us
-            </h1>
-            <TypeAnimation
-              sequence={[
-                "Thank you for visiting Imtiyaz! We're currently hard at work coding the next generation of innovative and intelligent tech solutions for you. We're putting in the long hours, caffeine, and dedication necessary to create products that will make your tech experience truly transformative. Our team is committed to excellence, and we can't wait to launch soon and show you what we've been working on. Stay tuned for more updates on our progress, and thank you for your patience as we continue to code away!", // Types 'Three' without deleting 'Two'
-                () => {
-                  console.log("Done typing!"); // Place optional callbacks anywhere in the array
-                },
-              ]}
-              speed={140}
-              wrapper="p"
-              cursor={true}
-              style={{
-                fontSize: "1.1em",
-                Width: "100%",
-                padding: "16px",
-              }}
-            />
-          </div>
-        </div>
-      </main>
-    </>
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <h1>{Bot.name}</h1>
+      <button onClick={addNode}>Add Node</button>
+      <ReactFlow nodes={nodes} edges={edges} />
+    </div>
   );
 }
