@@ -19,8 +19,10 @@ export default function Home() {
 
   return (
     <>
-      <main className={"bg-[#06044B] h-screen w-screen overflow-x-hidden"}>
-        <Lottie options={defaultOptions} height={400} width={400} />
+      <main
+        className={"bg-[#06044B] h-screen w-screen overflow-x-hidden pb-32"}
+      >
+        <Lottie options={defaultOptions} height={300} width={300} />
         <div className="w-[320px] xs:w-[350px] sm:w-[600px] md:w-[700px] flex justify-center items-center mx-auto">
           <div className="w-full">
             <h1 className="text-center md:text-4xl text-2xl">
